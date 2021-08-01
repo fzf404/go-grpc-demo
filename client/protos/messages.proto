@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+option go_package = "./pb";
+
+import "enums.proto";
+import "google/protobuf/timestamp.proto";
+
+// 员工
+message Employee {
+  int32 id = 1;
+  int32 no = 2;
+  string firstName = 3;
+  string lastName = 4;
+  // 月薪
+  MonthSalary monthSalary = 6;
+  // 状态
+  EmployeeStatus status = 7;
+  google.protobuf.Timestamp lastModfied = 8;
+
+  reserved 5;
+  reserved "salary";
+}
+
+// 奖金
+message MonthSalary {
+  float basic = 1;
+  float bonus = 2;
+}
+
+message GetByNoRequest { int32 no = 1; }
+
+message EmployeeResponse { Employee employee = 1; }
+
+message GetAllRequest {}
+
+message AddPhotoRequest { bytes data = 1; }
+
+message AddPhotoResponse { bool isOK = 1; }
+
+message EmployeeRequest { Employee employee = 1; }
+
+message TokenRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message TokenResponse {
+  string token = 1;
+  google.protobuf.Timestamp expiration = 2;
+  bool success = 3;
+}
+
+service EmployeeService {
+  rpc GetByNo(GetByNoRequest) returns (EmployeeResponse);
+  rpc GetAll(GetAllRequest) returns (stream EmployeeResponse);
+  rpc AddPhoto(stream AddPhotoRequest) returns (AddPhotoResponse);
+  rpc Save(EmployeeRequest) returns (EmployeeResponse);
+  rpc SaveAll(stream EmployeeRequest) returns (stream EmployeeResponse);
+  rpc CreateToken(TokenRequest) returns (TokenResponse);
+}
